@@ -15,27 +15,37 @@ export function Navbar() {
           {/* Navigation Links */}
           <NavigationMenu>
             <NavigationMenuList className="flex space-x-1">
-              <NavigationMenuItem>
-                <Link to="/">
-                  <Button variant="ghost">Home</Button>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/projects">
-                  <Button variant="ghost">Projects</Button>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/apply">
-                  <Button variant="ghost">Apply</Button>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/donate">
-                  <Button variant="ghost">Donate</Button>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
+         <NavigationMenuItem>
+          <Link to="/">
+            <Button variant="ghost">Home</Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link to="/projects">
+            <Button variant="ghost">Projects</Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link to="/about">
+            <Button variant="ghost">About</Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link to="/apply">
+            <Button variant="ghost">Apply</Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link to="/donate">
+            <Button variant="ghost">Donate</Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link to="/contact">
+            <Button variant="ghost">Contact</Button>
+          </Link>
+        </NavigationMenuItem>
+      </NavigationMenuList>
           </NavigationMenu>
 
           {/* Admin Button */}

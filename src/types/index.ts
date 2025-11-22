@@ -54,7 +54,66 @@ export interface ApiResponse<T> {
   message?: string;
   count?: number;
 }
+// Contact types
+export interface ContactInfo {
+  id: number;
+  contact_type: string;
+  label: string;
+  value: string;
+  link: string | null;
+  icon: string;
+  order_position: number;
+}
 
+export interface SocialMedia {
+  id: number;
+  platform: string;
+  platform_name: string;
+  url: string;
+  icon: string;
+  color_class: string;
+  is_active: boolean;
+  order_position: number;
+}
+
+export interface RegionalOffice {
+  id: number;
+  country: string;
+  email: string;
+  phone: string;
+  address: string | null;
+  is_active: boolean;
+  order_position: number;
+}
+// Settings types
+export interface SiteSettings {
+  site_name: string;
+  hero_heading: string;
+  hero_description: string;
+  mission_statement: string;
+  vision_statement: string;
+  office_hours: string;
+  response_time: string;
+}
+
+export interface PageContent {
+  [key: string]: string;
+}
+
+export interface CoreValue {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  order_position: number;
+}
+
+export interface TeamRole {
+  id: number;
+  role_title: string;
+  responsibilities: string;
+  order_position: number;
+}
 // Countries list (8 countries Y4C operates in)
 export const COUNTRIES = [
   'Ghana',
