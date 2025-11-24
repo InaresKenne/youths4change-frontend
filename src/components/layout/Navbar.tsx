@@ -48,10 +48,15 @@ export function Navbar() {
       </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Admin Button */}
-          <Link to="/admin">
-            <Button>Admin</Button>
-          </Link>
+         {/* Admin Button */}
+<div className="flex items-center gap-2">
+  <Link to="/admin">
+    <Button variant="outline" size="sm">
+      Admin
+    </Button>
+  </Link>
+</div>
+            
         </div>
       </div>
     </nav>
