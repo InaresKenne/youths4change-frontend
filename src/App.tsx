@@ -16,6 +16,7 @@ import { Donate } from '@/pages/Donate';
 import { Contact } from '@/pages/Contact';
 
 
+
 // Admin pages
 import { AdminLogin } from '@/pages/admin/Login';
 import { AdminDashboard } from '@/pages/admin/Dashboard';
@@ -29,6 +30,8 @@ import { ContentManagement } from '@/pages/admin/ContentManagement';
 import { DonationsList } from '@/pages/admin/DonationsList';
 import { DonationView } from '@/pages/admin/DonationView';
 import { ContactManagement } from '@/pages/admin/ContactManagement';
+import { AdminSettings } from '@/pages/admin/Settings';
+
 
 
 
@@ -52,6 +55,7 @@ function App() {
                     <Route path="/apply" element={<Apply />} />
                     <Route path="/donate" element={<Donate />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="settings" element={<AdminSettings />} />
                   </Routes>
                 </main>
                 <Footer />
@@ -80,6 +84,7 @@ function App() {
           <Route path="donations/:id" element={<DonationView />} />
           <Route path="content" element={<ContentManagement />} />
           <Route path="contact" element={<ContactManagement />} />
+          <Route path="settings" element={<AdminSettings />} />
           <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
         </Routes>
       </AdminLayout>
