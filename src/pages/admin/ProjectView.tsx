@@ -5,6 +5,7 @@ import type { Project } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getFullImageUrl } from '@/utils/cloudinary';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
@@ -160,17 +161,17 @@ export function ProjectView() {
       </div>
 
       {/* Project Image */}
-      {project.image_url && (
-        <Card>
-          <CardContent className="p-0">
-            <img 
-              src={project.image_url} 
-              alt={project.name}
-              className="w-full h-64 object-cover rounded-lg"
-            />
-          </CardContent>
-        </Card>
-      )}
+        {project.cloudinary_public_id && (
+          <Card>
+            <CardContent className="p-0">
+              <img 
+                src={getFullImageUrl(project.cloudinary_public_id)} 
+                alt={project.name}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+            </CardContent>
+          </Card>
+        )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -256,17 +257,10 @@ export function ProjectView() {
               <span className="text-gray-500">Status:</span>
               <span className="ml-2">{getStatusBadge(project.status)}</span>
             </div>
-            {project.image_url && (
+            {project.cloudinary_public_id && (
               <div>
-                <span className="text-gray-500">Image URL:</span>
-                <a 
-                  href={project.image_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="ml-2 text-blue-600 hover:underline truncate block"
-                >
-                  {project.image_url}
-                </a>
+                <span className="text-gray-500">Image Public ID:</span>
+                <span className="ml-2 font-mono text-sm">{project.cloudinary_public_id}</span>
               </div>
             )}
           </div>

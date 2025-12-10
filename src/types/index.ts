@@ -7,7 +7,7 @@ export interface Project {
   beneficiaries_count: number;
   budget: number;
   status: 'active' | 'completed' | 'deleted';
-  image_url: string;
+  cloudinary_public_id: string | null;
   created_at: string;
   updated_at: string;
 }

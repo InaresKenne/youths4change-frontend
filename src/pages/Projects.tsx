@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
+import { getCardImageUrl } from '@/utils/cloudinary';
 
 
 export function Projects() {
@@ -83,13 +84,15 @@ export function Projects() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project) => (
             <Card key={project.id} className="hover:shadow-xl transition-shadow">
-              {project.image_url && (
+              {project.cloudinary_public_id && (
                 <img 
-                  src={project.image_url} 
+                  src={getCardImageUrl(project.cloudinary_public_id)} 
                   alt={project.name}
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
               )}
+              
+ 
               
               <CardHeader>
                 <div className="flex justify-between items-start">

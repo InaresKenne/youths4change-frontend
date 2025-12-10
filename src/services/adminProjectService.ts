@@ -8,7 +8,7 @@ export interface ProjectFormData {
   beneficiaries_count: number;
   budget: number;
   status: string;
-  image_url?: string;
+  cloudinary_public_id?: string;
 }
 
 export const adminProjectService = {

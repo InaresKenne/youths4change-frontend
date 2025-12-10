@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminProjectService } from '@/services/adminProjectService';
 import type { Project } from '@/types';
 import {COUNTRIES } from '@/types';
+import { getThumbnailUrl } from '@/utils/cloudinary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -217,23 +218,23 @@ export function ProjectsList() {
                 </TableHeader>
                 <TableBody>
                   {filteredProjects.map((project) => (
-                    <TableRow key={project.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          {project.image_url && (
-                            <img 
-                              src={project.image_url} 
-                              alt={project.name}
-                              className="h-10 w-10 rounded-lg object-cover"
-                            />
-                          )}
-                          <div>
-                            <div className="font-medium">{project.name}</div>
-                            <div className="text-sm text-gray-500 truncate max-w-[200px]">
-                              {project.description.substring(0, 50)}...
-                            </div>
-                          </div>
+                      <TableRow key={project.id}>
+                        <TableCell>
+                            <div className="flex items-center gap-3">
+                      {project.cloudinary_public_id && (
+                        <img 
+                          src={getThumbnailUrl(project.cloudinary_public_id)} 
+                          alt={project.name}
+                          className="h-10 w-10 rounded-lg object-cover"
+                        />
+                      )}
+                      <div>
+                        <div className="font-medium">{project.name}</div>
+                        <div className="text-sm text-gray-500 truncate max-w-[200px]">
+                          {project.description.substring(0, 50)}...
                         </div>
+                      </div>
+                    </div>
                       </TableCell>
                       <TableCell>{project.country}</TableCell>
                       <TableCell>{project.beneficiaries_count.toLocaleString()}</TableCell>
@@ -273,6 +274,7 @@ export function ProjectsList() {
                       </TableCell>
                     </TableRow>
                   ))}
+
                 </TableBody>
               </Table>
             </div>

@@ -4,6 +4,7 @@ import { projectService } from '@/services/projectService';
 import type { Project } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { getHeroImageUrl } from '@/utils/cloudinary';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, MapPin, Users, DollarSign, Calendar } from 'lucide-react';
@@ -73,16 +74,16 @@ export function ProjectDetails() {
 
   return (
     <div>
-      {/* Hero Image */}
-      {project.image_url && (
-        <div className="w-full h-96 bg-gray-200">
-          <img 
-            src={project.image_url} 
-            alt={project.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+    {/* Hero Image */}
+    {project.cloudinary_public_id && (
+      <div className="w-full h-96 bg-gray-200">
+        <img 
+          src={getHeroImageUrl(project.cloudinary_public_id)} 
+          alt={project.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    )}
 
       <div className="container mx-auto px-4 py-12">
         {/* Back Button */}

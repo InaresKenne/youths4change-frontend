@@ -1,0 +1,177 @@
+import type { 
+  CloudinaryUploadWidgetOptions, 
+  CloudinaryUploadResult,
+  CloudinaryWidget 
+} from '@/types/cloudinary';
+
+// Get Cloudinary config from env
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+/**
+ * Create and open Cloudinary upload widget
+ */
+export const openCloudinaryWidget = (
+  onSuccess: (publicId: string, secureUrl: string) => void,
+  onError?: (error: any) => void,
+  customOptions?: Partial<CloudinaryUploadWidgetOptions>
+): CloudinaryWidget | null => {
+  // Check if Cloudinary is loaded
+  if (!window.cloudinary) {
+    console.error('Cloudinary widget not loaded');
+    return null;
+  }
+
+  // Default widget options
+  const defaultOptions: CloudinaryUploadWidgetOptions = {
+    cloudName: CLOUDINARY_CLOUD_NAME,
+    uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+    sources: ['local', 'url', 'camera'],
+    multiple: false,
+    maxFiles: 1,
+    maxFileSize: 10000000, // 10MB
+    clientAllowedFormats: ['jpg', 'png', 'webp', 'gif'],
+    maxImageWidth: 2000,
+    maxImageHeight: 2000,
+    cropping: false,
+    folder: 'youths4change',
+    tags: ['youths4change', 'website'],
+  };
+
+  // Merge with custom options
+  const options = { ...defaultOptions, ...customOptions };
+
+  // Create widget
+  const widget = window.cloudinary.createUploadWidget(
+    options,
+    (error: any, result: CloudinaryUploadResult) => {
+      if (error) {
+        console.error('Cloudinary upload error:', error);
+        if (onError) onError(error);
+        return;
+      }
+
+      // Handle successful upload
+      if (result.event === 'success') {
+        const { public_id, secure_url } = result.info;
+        onSuccess(public_id, secure_url);
+      }
+    }
+  );
+
+  // Open widget
+  widget.open();
+
+  return widget;
+};
+
+/**
+ * Generate Cloudinary image URL from public_id with transformations
+ */
+export const getCloudinaryUrl = (
+  publicId: string,
+  options?: {
+    width?: number;
+    height?: number;
+    crop?: 'fill' | 'fit' | 'scale' | 'crop' | 'thumb';
+    quality?: 'auto' | number;
+    format?: 'auto' | 'jpg' | 'png' | 'webp';
+    gravity?: 'auto' | 'face' | 'center';
+  }
+): string => {
+  if (!publicId) return '';
+  if (!CLOUDINARY_CLOUD_NAME) {
+    console.error('VITE_CLOUDINARY_CLOUD_NAME not set in .env');
+    return '';
+  }
+
+  // Default transformations
+  const {
+    width,
+    height,
+    crop = 'fill',
+    quality = 'auto',
+    format = 'auto',
+    gravity = 'auto',
+  } = options || {};
+
+  // Build transformation string
+  const transformations: string[] = [];
+  
+  if (width) transformations.push(`w_${width}`);
+  if (height) transformations.push(`h_${height}`);
+  if (crop) transformations.push(`c_${crop}`);
+  if (quality) transformations.push(`q_${quality}`);
+  if (format) transformations.push(`f_${format}`);
+  if (gravity && crop === 'fill') transformations.push(`g_${gravity}`);
+
+  const transformString = transformations.length > 0 
+    ? `${transformations.join(',')}/` 
+    : '';
+
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformString}${publicId}`;
+};
+
+/**
+ * Generate thumbnail URL (small preview)
+ */
+export const getThumbnailUrl = (publicId: string): string => {
+  return getCloudinaryUrl(publicId, {
+    width: 150,
+    height: 150,
+    crop: 'fill',
+    quality: 'auto',
+    format: 'auto',
+  });
+};
+
+/**
+ * Generate card image URL (medium size for cards)
+ */
+export const getCardImageUrl = (publicId: string): string => {
+  return getCloudinaryUrl(publicId, {
+    width: 400,
+    height: 300,
+    crop: 'fill',
+    quality: 'auto',
+    format: 'auto',
+  });
+};
+
+/**
+ * Generate hero image URL (large, optimized)
+ */
+export const getHeroImageUrl = (publicId: string): string => {
+  return getCloudinaryUrl(publicId, {
+    width: 1920,
+    height: 600,
+    crop: 'fill',
+    quality: 'auto',
+    format: 'auto',
+  });
+};
+
+/**
+ * Generate full size image URL (original quality)
+ */
+export const getFullImageUrl = (publicId: string): string => {
+  return getCloudinaryUrl(publicId, {
+    quality: 'auto',
+    format: 'auto',
+  });
+};
+
+/**
+ * Validate environment variables
+ */
+export const validateCloudinaryConfig = (): boolean => {
+  if (!CLOUDINARY_CLOUD_NAME) {
+    console.error('Missing VITE_CLOUDINARY_CLOUD_NAME in .env file');
+    return false;
+  }
+  if (!CLOUDINARY_UPLOAD_PRESET) {
+    console.error('Missing VITE_CLOUDINARY_UPLOAD_PRESET in .env file');
+    return false;
+  }
+  return true;
+};

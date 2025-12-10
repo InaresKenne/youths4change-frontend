@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 
 interface ProjectFormProps {
@@ -21,15 +22,15 @@ export function ProjectForm({ mode }: ProjectFormProps) {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   
-  const [formData, setFormData] = useState<ProjectFormData>({
-    name: '',
-    description: '',
-    country: '',
-    beneficiaries_count: 0,
-    budget: 0,
-    status: 'active',
-    image_url: '',
-  });
+    const [formData, setFormData] = useState<ProjectFormData>({
+      name: '',
+      description: '',
+      country: '',
+      beneficiaries_count: 0,
+      budget: 0,
+      status: 'active',
+      cloudinary_public_id: '',
+    });
   
   const [errors, setErrors] = useState<Partial<Record<keyof ProjectFormData, string>>>({});
   const [loading, setLoading] = useState(mode === 'edit');
@@ -43,28 +44,27 @@ export function ProjectForm({ mode }: ProjectFormProps) {
   }, [mode, id]);
 
   const loadProject = async (projectId: number) => {
-    try {
-      const response = await adminProjectService.getById(projectId);
-      if (response.success && response.data) {
-        const project = response.data;
-        setFormData({
-          name: project.name,
-          description: project.description,
-          country: project.country,
-          beneficiaries_count: project.beneficiaries_count,
-          budget: project.budget,
-          status: project.status,
-          image_url: project.image_url || '',
-        });
-      }
-    } catch (error) {
-      console.error('Error loading project:', error);
-      setApiError('Failed to load project');
-    } finally {
-      setLoading(false);
+  try {
+    const response = await adminProjectService.getById(projectId);
+    if (response.success && response.data) {
+      const project = response.data;
+      setFormData({
+        name: project.name,
+        description: project.description,
+        country: project.country,
+        beneficiaries_count: project.beneficiaries_count,
+        budget: project.budget,
+        status: project.status,
+        cloudinary_public_id: project.cloudinary_public_id || '',
+      });
     }
-  };
-
+  } catch (error) {
+    console.error('Error loading project:', error);
+    setApiError('Failed to load project');
+  } finally {
+    setLoading(false);
+  }
+};
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof ProjectFormData, string>> = {};
 
@@ -313,33 +313,17 @@ export function ProjectForm({ mode }: ProjectFormProps) {
               </div>
             </div>
 
-            {/* Image URL */}
-            <div className="space-y-2">
-              <Label htmlFor="image_url">Image URL (Optional)</Label>
-              <Input
-                id="image_url"
-                type="url"
-                value={formData.image_url}
-                onChange={(e) => handleInputChange('image_url', e.target.value)}
-                placeholder="https://example.com/image.jpg"
-              />
-              <p className="text-sm text-gray-500">
-                Enter a URL for the project image. Leave blank for no image.
-              </p>
-              {formData.image_url && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <img 
-                    src={formData.image_url} 
-                    alt="Preview" 
-                    className="h-32 w-48 object-cover rounded-lg border"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+    {/* Project Image */}
+    <div className="space-y-2">
+      <ImageUpload
+        value={formData.cloudinary_public_id}
+        onChange={(publicId) => handleInputChange('cloudinary_public_id', publicId)}
+        label="Project Image (Optional)"
+        description="Upload an image for this project. Recommended size: 800x600px"
+        previewWidth={400}
+        previewHeight={300}
+      />
+    </div>
 
             {/* Actions */}
             <div className="flex gap-4 pt-4">
