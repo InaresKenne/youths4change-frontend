@@ -18,7 +18,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
+    // Only check auth if we're on an admin route
+    if (window.location.pathname.startsWith('/admin')) {
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const checkAuth = async () => {
@@ -27,7 +32,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.data.authenticated) {
         setAdmin(response.data.user);
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Silently handle authentication errors - this is expected when not logged in
+      if (error.response?.status === 401) {
+        // Expected - user not authenticated
+      }
       setAdmin(null);
     } finally {
       setLoading(false);

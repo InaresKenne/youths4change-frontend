@@ -9,11 +9,47 @@ const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
 /**
+ * Generate optimized Cloudinary URL with transformations
+ * @param url - Original Cloudinary URL
+ * @param options - Transformation options
+ */
+export const getOptimizedImageUrl = (
+  url: string,
+  options?: {
+    width?: number;
+    height?: number;
+    quality?: 'auto' | 'auto:best' | 'auto:good' | number;
+    format?: 'auto' | 'webp' | 'jpg' | 'png';
+  }
+): string => {
+  if (!url || !url.includes('cloudinary.com')) {
+    return url;
+  }
+
+  const { width, height, quality = 'auto:best', format = 'auto' } = options || {};
+  
+  // Build transformation string
+  const transformations: string[] = [];
+  
+  if (width) transformations.push(`w_${width}`);
+  if (height) transformations.push(`h_${height}`);
+  if (width || height) transformations.push('c_fit'); // Fit within dimensions without cropping
+  transformations.push(`q_${quality}`);
+  transformations.push(`f_${format}`);
+  
+  const transformString = transformations.join(',');
+  
+  // Insert transformation into URL
+  return url.replace('/upload/', `/upload/${transformString}/`);
+};
+
+/**
  * Create and open Cloudinary upload widget
  */
 export const openCloudinaryWidget = (
   onSuccess: (publicId: string, secureUrl: string) => void,
   onError?: (error: any) => void,
+  folder?: string,
   customOptions?: Partial<CloudinaryUploadWidgetOptions>
 ): CloudinaryWidget | null => {
   // Check if Cloudinary is loaded
@@ -29,12 +65,12 @@ export const openCloudinaryWidget = (
     sources: ['local', 'url', 'camera'],
     multiple: false,
     maxFiles: 1,
-    maxFileSize: 10000000, // 10MB
-    clientAllowedFormats: ['jpg', 'png', 'webp', 'gif'],
-    maxImageWidth: 2000,
-    maxImageHeight: 2000,
+    maxFileSize: 15000000, // 15MB for higher quality images
+    clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg', 'tiff'],
+    maxImageWidth: 4000, // Higher resolution
+    maxImageHeight: 4000, // Higher resolution
     cropping: false,
-    folder: 'youths4change',
+    folder: folder || 'youths4change',
     tags: ['youths4change', 'website'],
   };
 
@@ -144,8 +180,8 @@ export const getCardImageUrl = (publicId: string): string => {
 export const getHeroImageUrl = (publicId: string): string => {
   return getCloudinaryUrl(publicId, {
     width: 1920,
-    height: 600,
-    crop: 'fill',
+    height: 800,
+    crop: 'fit',
     quality: 'auto',
     format: 'auto',
   });

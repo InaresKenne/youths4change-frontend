@@ -33,4 +33,12 @@ export const analyticsService = {
     );
     return response.data;
   },
+
+  // Get list of active countries
+  getCountries: async () => {
+    const response = await api.get<ApiResponse<string[]>>(
+      '/api/analytics/countries'
+    );
+    return response.data;
+  },
 };

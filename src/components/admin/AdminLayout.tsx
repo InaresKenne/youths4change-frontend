@@ -12,6 +12,7 @@ import {
   X,
   Contact,
   FileText,
+  UserCog,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -37,6 +38,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { path: '/admin/donations', icon: DollarSign, label: 'Donations' },
     { path: '/admin/content', icon: FileText, label: 'Content' },
     { path: '/admin/contact', icon: Contact, label: 'Contact Info' },
+    { path: '/admin/team', icon: UserCog, label: 'Team Management' },
     { path: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 

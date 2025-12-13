@@ -114,6 +114,41 @@ export interface TeamRole {
   responsibilities: string;
   order_position: number;
 }
+
+// Team Member types
+export interface Founder {
+  id: number;
+  name: string;
+  title: string;
+  bio: string;
+  image_url: string | null;
+  image_public_id: string | null;
+  email: string | null;
+  linkedin_url: string | null;
+  twitter_url: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  position: string;
+  role_type: 'executive' | 'board' | 'volunteer' | 'advisor';
+  bio: string | null;
+  image_url: string | null;
+  image_public_id: string | null;
+  email: string | null;
+  linkedin_url: string | null;
+  twitter_url: string | null;
+  country: string | null;
+  order_position: number;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 // Countries list (8 countries Y4C operates in)
 export const COUNTRIES = [
   'Ghana',

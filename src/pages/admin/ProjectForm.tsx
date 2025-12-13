@@ -317,11 +317,12 @@ export function ProjectForm({ mode }: ProjectFormProps) {
     <div className="space-y-2">
       <ImageUpload
         value={formData.cloudinary_public_id}
-        onChange={(publicId) => handleInputChange('cloudinary_public_id', publicId)}
+        onChange={(url, publicId) => handleInputChange('cloudinary_public_id', publicId || url)}
         label="Project Image (Optional)"
         description="Upload an image for this project. Recommended size: 800x600px"
         previewWidth={400}
         previewHeight={300}
+        folder="projects"
       />
     </div>
 

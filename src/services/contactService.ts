@@ -25,4 +25,12 @@ export const contactService = {
     );
     return response.data;
   },
+
+  // Get countries from regional offices
+  getOfficeCountries: async () => {
+    const response = await api.get<ApiResponse<string[]>>(
+      '/api/regional-offices/countries'
+    );
+    return response.data;
+  },
 };

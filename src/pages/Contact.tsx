@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { contactService } from '@/services/contactService';
 import type { ContactInfo, SocialMedia, RegionalOffice } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -221,9 +222,11 @@ export function Contact() {
               <p className="text-gray-600 mb-4">
                 Join our team and contribute your skills to make a difference
               </p>
-              <Button className="w-full" variant="outline">
-                Learn More
-              </Button>
+              <Link to="/apply">
+                <Button className="w-full" variant="outline">
+                  Learn More
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
@@ -235,9 +238,13 @@ export function Contact() {
               <p className="text-gray-600 mb-4">
                 Collaborate on projects and initiatives across Africa
               </p>
-              <Button className="w-full" variant="outline">
-                Partnership Info
-              </Button>
+              <a 
+                href={`mailto:${contactInfo.find(c => c.icon === 'Mail')?.value || 'info@youths4change.org'}?subject=Partnership Inquiry`}
+              >
+                <Button className="w-full" variant="outline">
+                  Partnership Info
+                </Button>
+              </a>
             </CardContent>
           </Card>
 
@@ -249,9 +256,13 @@ export function Contact() {
               <p className="text-gray-600 mb-4">
                 Press and media contacts for interviews and features
               </p>
-              <Button className="w-full" variant="outline">
-                Media Kit
-              </Button>
+              <a 
+                href={`mailto:${contactInfo.find(c => c.icon === 'Mail')?.value || 'info@youths4change.org'}?subject=Media Inquiry`}
+              >
+                <Button className="w-full" variant="outline">
+                  Media Kit
+                </Button>
+              </a>
             </CardContent>
           </Card>
         </div>

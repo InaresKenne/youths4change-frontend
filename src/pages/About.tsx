@@ -1,12 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, Target, Heart, Globe } from 'lucide-react';
+import { Users, Target, Heart, Globe, Mail, Linkedin, Twitter } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { analyticsService} from '@/services/analyticsService';
 import type {OverviewStats, CountryStats } from '@/services/analyticsService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { settingsService } from '@/services/settingsService';
-import type { SiteSettings, PageContent, CoreValue, TeamRole } from '@/types';
+import type { SiteSettings, PageContent, CoreValue, TeamRole, Founder, TeamMember } from '@/types';
+import { teamService } from '@/services/teamService';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 // Icon mapping for core values
 const iconMap: Record<string, any> = {
@@ -24,7 +26,11 @@ export function About() {
   const [content, setContent] = useState<PageContent | null>(null);
   const [coreValues, setCoreValues] = useState<CoreValue[]>([]);
   const [teamRoles, setTeamRoles] = useState<TeamRole[]>([]);
+  const [founder, setFounder] = useState<Founder | null>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedFounderBio, setExpandedFounderBio] = useState(false);
+  const [expandedMemberBios, setExpandedMemberBios] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     loadData();
@@ -32,13 +38,15 @@ export function About() {
 
   const loadData = async () => {
     try {
-      const [overviewRes, countryRes, settingsRes, contentRes, valuesRes, rolesRes] = await Promise.all([
+      const [overviewRes, countryRes, settingsRes, contentRes, valuesRes, rolesRes, founderRes, teamRes] = await Promise.all([
         analyticsService.getOverview(),
         analyticsService.getProjectsByCountry(),
         settingsService.getSettings(),
         settingsService.getPageContent('about'),
         settingsService.getCoreValues(),
         settingsService.getTeamRoles(),
+        teamService.getFounder(),
+        teamService.getTeamMembers(),
       ]);
       
       if (overviewRes.success && overviewRes.data) {
@@ -63,6 +71,20 @@ export function About() {
       
       if (rolesRes.success && rolesRes.data) {
         setTeamRoles(rolesRes.data);
+      }
+      
+      if (founderRes.success && founderRes.data) {
+        console.log('Founder data loaded:', founderRes.data);
+        setFounder(founderRes.data);
+      } else {
+        console.log('No founder data:', founderRes);
+      }
+      
+      if (teamRes.success && teamRes.data) {
+        console.log('Team members loaded:', teamRes.data);
+        setTeamMembers(teamRes.data);
+      } else {
+        console.log('No team members:', teamRes);
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -104,25 +126,6 @@ export function About() {
     { name: 'Tanzania', members: 3, projects: 1 },
     { name: 'Rwanda', members: 2, projects: 1 },
     { name: 'Cameroon', members: 4, projects: 2 },
-  ];
-
-  const teamMembers = [
-    {
-      role: 'Executive Director',
-      responsibilities: 'Overall strategy and leadership',
-    },
-    {
-      role: 'Program Coordinator',
-      responsibilities: 'Project management and implementation',
-    },
-    {
-      role: 'Communications Lead',
-      responsibilities: 'Marketing and community engagement',
-    },
-    {
-      role: 'Finance Manager',
-      responsibilities: 'Financial planning and reporting',
-    },
   ];
 
   return (
@@ -276,28 +279,385 @@ export function About() {
   </Card>
 </div>
 
-{/* Team Structure */}
+{/* Founder Section */}
+{founder && (
+  <div className="mb-16">
+    <h2 className="text-3xl font-bold text-center mb-8">Meet Our Founder</h2>
+    <Card className="max-w-4xl mx-auto">
+      <CardContent className="p-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Founder Image */}
+          <div className="shrink-0">
+            {founder.image_url ? (
+              <img
+                src={founder.image_url.includes('cloudinary.com') 
+                  ? getOptimizedImageUrl(founder.image_url, { width: 400, quality: 'auto:best', format: 'auto' })
+                  : founder.image_url
+                }
+                alt={founder.name}
+                className="w-full md:w-64 h-auto rounded-lg shadow-lg"
+                onError={(e) => {
+                  console.error('Failed to load founder image:', founder.image_url);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <div className="w-48 h-48 md:w-64 md:h-64 rounded-lg bg-gray-200 flex items-center justify-center">
+                <Users className="w-20 h-20 text-gray-400" />
+              </div>
+            )}
+          </div>
+
+          {/* Founder Info */}
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold mb-2">{founder.name}</h3>
+            <p className="text-blue-600 font-semibold mb-4">{founder.title}</p>
+            <div className="text-gray-700 whitespace-pre-line mb-6">
+              {founder.bio && founder.bio.length > 300 ? (
+                <>
+                  {expandedFounderBio ? founder.bio : `${founder.bio.substring(0, 300)}...`}
+                  <button
+                    onClick={() => setExpandedFounderBio(!expandedFounderBio)}
+                    className="text-blue-600 hover:text-blue-700 font-semibold ml-2"
+                  >
+                    {expandedFounderBio ? 'See less' : 'See more'}
+                  </button>
+                </>
+              ) : (
+                founder.bio
+              )}
+            </div>
+            
+            {/* Social Links */}
+            <div className="flex gap-4">
+              {founder.email && (
+                <a
+                  href={`mailto:${founder.email}`}
+                  className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition"
+                >
+                  <Mail className="w-5 h-5" />
+                </a>
+              )}
+              {founder.linkedin_url && (
+                <a
+                  href={founder.linkedin_url.startsWith('http') ? founder.linkedin_url : `https://${founder.linkedin_url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+              )}
+              {founder.twitter_url && (
+                <a
+                  href={founder.twitter_url.startsWith('http') ? founder.twitter_url : `https://${founder.twitter_url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition"
+                >
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+)}
+
+{/* Team Members Section */}
 <div className="mb-16">
   <h2 className="text-3xl font-bold text-center mb-8">Our Team</h2>
+  
   {loading ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {[1, 2, 3, 4].map((i) => (
-        <Skeleton key={i} className="h-32 w-full" />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <Skeleton key={i} className="h-96 w-full" />
       ))}
     </div>
+  ) : teamMembers.length > 0 ? (
+    <>
+      {/* Executive Team - Grouped by Country */}
+      {teamMembers.filter(m => m.role_type === 'executive').length > 0 && (
+        <div className="mb-12">
+          <h3 className="text-2xl font-semibold text-center mb-8">Executive Team</h3>
+          {/* Group executives by country */}
+          {Array.from(new Set(teamMembers.filter(m => m.role_type === 'executive' && m.country).map(m => m.country)))
+            .sort()
+            .map((country) => (
+              <div key={country} className="mb-10">
+                {/* Country Header */}
+                <div className="flex items-center justify-center mb-6">
+                  <div className="flex-1 border-t border-gray-300"></div>
+                  <h4 className="px-6 text-xl font-bold text-blue-600">{country}</h4>
+                  <div className="flex-1 border-t border-gray-300"></div>
+                </div>
+                
+                {/* Team members for this country */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {teamMembers
+                    .filter(m => m.role_type === 'executive' && m.country === country)
+                    .map((member) => (
+                      <Card key={member.id} className="hover:shadow-lg transition">
+                        <CardContent className="p-6">
+                          {/* Member Image */}
+                          <div className="mb-4">
+                            {member.image_url ? (
+                              <img
+                                src={member.image_url.includes('cloudinary.com')
+                                  ? getOptimizedImageUrl(member.image_url, { width: 400, quality: 'auto:best', format: 'auto' })
+                                  : member.image_url
+                                }
+                                alt={member.name}
+                                className="w-full h-auto rounded-lg"
+                                onError={(e) => {
+                                  console.error('Failed to load team member image:', member.name, member.image_url);
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <Users className="w-12 h-12 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Member Info */}
+                          <h4 className="text-xl font-bold mb-1">{member.name}</h4>
+                          <p className="text-blue-600 font-semibold mb-2">{member.position}</p>
+                          {member.bio && (
+                            <div className="text-gray-600 text-sm mb-4">
+                              {member.bio.length > 150 ? (
+                                <>
+                                  {expandedMemberBios[member.id] ? member.bio : `${member.bio.substring(0, 150)}...`}
+                                  <button
+                                    onClick={() => setExpandedMemberBios(prev => ({
+                                      ...prev,
+                                      [member.id]: !prev[member.id]
+                                    }))}
+                                    className="text-blue-600 hover:text-blue-700 font-semibold ml-1 block mt-1"
+                                  >
+                                    {expandedMemberBios[member.id] ? 'See less' : 'See more'}
+                                  </button>
+                                </>
+                              ) : (
+                                member.bio
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Social Links */}
+                          <div className="flex gap-3">
+                            {member.email && (
+                              <a
+                                href={`mailto:${member.email}`}
+                                className="text-gray-600 hover:text-blue-600 transition"
+                              >
+                                <Mail className="w-4 h-4" />
+                              </a>
+                            )}
+                            {member.linkedin_url && (
+                              <a
+                                href={member.linkedin_url.startsWith('http') ? member.linkedin_url : `https://${member.linkedin_url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-blue-600 transition"
+                              >
+                                <Linkedin className="w-4 h-4" />
+                              </a>
+                            )}
+                            {member.twitter_url && (
+                              <a
+                                href={member.twitter_url.startsWith('http') ? member.twitter_url : `https://${member.twitter_url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-blue-600 transition"
+                              >
+                                <Twitter className="w-4 h-4" />
+                              </a>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+            ))}
+          
+          {/* Executives without country */}
+          {teamMembers.filter(m => m.role_type === 'executive' && !m.country).length > 0 && (
+            <div className="mb-10">
+              <div className="flex items-center justify-center mb-6">
+                <div className="flex-1 border-t border-gray-300"></div>
+                <h4 className="px-6 text-xl font-bold text-gray-600">Other Executives</h4>
+                <div className="flex-1 border-t border-gray-300"></div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {teamMembers
+                  .filter(m => m.role_type === 'executive' && !m.country)
+                  .map((member) => (
+                    <Card key={member.id} className="hover:shadow-lg transition">
+                      <CardContent className="p-6">
+                        <div className="mb-4">
+                          {member.image_url ? (
+                            <img
+                              src={member.image_url.includes('cloudinary.com')
+                                ? getOptimizedImageUrl(member.image_url, { width: 400, quality: 'auto:best', format: 'auto' })
+                                : member.image_url
+                              }
+                              alt={member.name}
+                              className="w-full h-auto rounded-lg"
+                              onError={(e) => {
+                                console.error('Failed to load team member image:', member.name, member.image_url);
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                              <Users className="w-12 h-12 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                        
+                        <h4 className="text-xl font-bold mb-1">{member.name}</h4>
+                        <p className="text-blue-600 font-semibold mb-2">{member.position}</p>
+                        {member.bio && (
+                          <div className="text-gray-600 text-sm mb-4">
+                            {member.bio.length > 150 ? (
+                              <>
+                                {expandedMemberBios[member.id] ? member.bio : `${member.bio.substring(0, 150)}...`}
+                                <button
+                                  onClick={() => setExpandedMemberBios(prev => ({
+                                    ...prev,
+                                    [member.id]: !prev[member.id]
+                                  }))}
+                                  className="text-blue-600 hover:text-blue-700 font-semibold ml-1 block mt-1"
+                                >
+                                  {expandedMemberBios[member.id] ? 'See less' : 'See more'}
+                                </button>
+                              </>
+                            ) : (
+                              member.bio
+                            )}
+                          </div>
+                        )}
+                        
+                        <div className="flex gap-3">
+                          {member.email && (
+                            <a href={`mailto:${member.email}`} className="text-gray-600 hover:text-blue-600 transition">
+                              <Mail className="w-4 h-4" />
+                            </a>
+                          )}
+                          {member.linkedin_url && (
+                            <a href={member.linkedin_url.startsWith('http') ? member.linkedin_url : `https://${member.linkedin_url}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition">
+                              <Linkedin className="w-4 h-4" />
+                              </a>
+                          )}
+                          {member.twitter_url && (
+                            <a href={member.twitter_url.startsWith('http') ? member.twitter_url : `https://${member.twitter_url}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition">
+                              <Twitter className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Board Members */}
+      {teamMembers.filter(m => m.role_type === 'board').length > 0 && (
+        <div className="mb-12">
+          <h3 className="text-2xl font-semibold text-center mb-6">Board Members</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {teamMembers.filter(m => m.role_type === 'board').map((member) => (
+              <Card key={member.id} className="hover:shadow-lg transition">
+                <CardContent className="p-6">
+                  {member.image_url ? (
+                    <img
+                      src={member.image_url.includes('cloudinary.com')
+                        ? getOptimizedImageUrl(member.image_url, { width: 400, quality: 'auto:best', format: 'auto' })
+                        : member.image_url
+                      }
+                      alt={member.name}
+                      className="w-full h-auto rounded-lg mb-4"
+                      onError={(e) => {
+                        console.error('Failed to load board member image:', member.name, member.image_url);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center mb-4">
+                      <Users className="w-12 h-12 text-gray-400" />
+                    </div>
+                  )}
+                  <h4 className="text-xl font-bold mb-1">{member.name}</h4>
+                  <p className="text-blue-600 font-semibold mb-2">{member.position}</p>
+                  {member.country && (
+                    <Badge variant="secondary" className="mb-3">{member.country}</Badge>
+                  )}
+                  {member.bio && (
+                    <div className="text-gray-600 text-sm">
+                      {member.bio.length > 150 ? (
+                        <>
+                          {expandedMemberBios[member.id] ? member.bio : `${member.bio.substring(0, 150)}...`}
+                          <button
+                            onClick={() => setExpandedMemberBios(prev => ({
+                              ...prev,
+                              [member.id]: !prev[member.id]
+                            }))}
+                            className="text-blue-600 hover:text-blue-700 font-semibold ml-1 block mt-1"
+                          >
+                            {expandedMemberBios[member.id] ? 'See less' : 'See more'}
+                          </button>
+                        </>
+                      ) : (
+                        member.bio
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Advisors */}
+      {teamMembers.filter(m => m.role_type === 'advisor').length > 0 && (
+        <div className="mb-12">
+          <h3 className="text-2xl font-semibold text-center mb-6">Advisors</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {teamMembers.filter(m => m.role_type === 'advisor').map((member) => (
+              <Card key={member.id} className="text-center">
+                <CardContent className="p-4">
+                  {member.image_url ? (
+                    <img
+                      src={getOptimizedImageUrl(member.image_url, { width: 200, height: 200, quality: 'auto', format: 'auto' })}
+                      alt={member.name}
+                      className="w-32 h-32 object-cover rounded-full mx-auto mb-3"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-3 flex items-center justify-center">
+                      <Users className="w-12 h-12 text-gray-400" />
+                    </div>
+                  )}
+                  <h4 className="font-bold mb-1">{member.name}</h4>
+                  <p className="text-sm text-blue-600">{member.position}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   ) : (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {teamRoles.map((member) => (
-        <Card key={member.id}>
-          <CardHeader>
-            <CardTitle className="text-xl">{member.role_title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600">{member.responsibilities}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <p className="text-center text-gray-600">No team members to display yet.</p>
   )}
 </div>
 

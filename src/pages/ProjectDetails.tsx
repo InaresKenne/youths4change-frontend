@@ -74,14 +74,35 @@ export function ProjectDetails() {
 
   return (
     <div>
-    {/* Hero Image */}
+    {/* Hero Image with Title and Description Overlay */}
     {project.cloudinary_public_id && (
-      <div className="w-full h-96 bg-gray-200">
+      <div className="relative w-full h-192 bg-gray-200">
         <img 
           src={getHeroImageUrl(project.cloudinary_public_id)} 
           alt={project.name}
           className="w-full h-full object-cover"
         />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
+        
+        {/* Content Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 text-white">
+          <div className="container mx-auto px-4 py-12">
+            <div className="flex items-start justify-between mb-6">
+              <h1 className="text-5xl font-bold drop-shadow-lg">{project.name}</h1>
+              <Badge 
+                variant={project.status === 'active' ? 'default' : 'secondary'}
+                className="text-base px-4 py-2"
+              >
+                {project.status}
+              </Badge>
+            </div>
+            
+            <p className="text-xl text-white/95 max-w-4xl whitespace-pre-wrap drop-shadow-lg leading-relaxed">
+              {project.description}
+            </p>
+          </div>
+        </div>
       </div>
     )}
 
@@ -97,16 +118,6 @@ export function ProjectDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <div className="flex items-start justify-between mb-4">
-              <h1 className="text-4xl font-bold">{project.name}</h1>
-              <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
-                {project.status}
-              </Badge>
-            </div>
-
-            <p className="text-lg text-gray-600 mb-8 whitespace-pre-wrap">
-              {project.description}
-            </p>
 
             {/* Project Stats */}
             <div className="grid grid-cols-2 gap-4 mb-8">

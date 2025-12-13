@@ -146,6 +146,65 @@ export function Home() {
       </Card>
     </div>
   </div>
+
+  {/* Get Involved Section */}
+  <div className="py-16 bg-gray-50">
+    <div className="container mx-auto px-4">
+      <h2 className="text-3xl font-bold text-center mb-12">Get Involved</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Volunteer */}
+        <Card className="hover:shadow-lg transition">
+          <CardHeader>
+            <CardTitle className="text-2xl">Volunteer</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-600">
+              Join our team and contribute your skills to make a difference
+            </p>
+            <Link to="/apply">
+              <Button className="w-full" variant="outline">
+                Learn More
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Partner */}
+        <Card className="hover:shadow-lg transition">
+          <CardHeader>
+            <CardTitle className="text-2xl">Partner With Us</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-600">
+              Collaborate on projects and initiatives across Africa
+            </p>
+            <Link to="/contact">
+              <Button className="w-full" variant="outline">
+                Partnership Info
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Media */}
+        <Card className="hover:shadow-lg transition">
+          <CardHeader>
+            <CardTitle className="text-2xl">Media Inquiries</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-600">
+              Press and media contacts for interviews and features
+            </p>
+            <Link to="/contact">
+              <Button className="w-full" variant="outline">
+                Media Kit
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  </div>
     </div>
   );
 }

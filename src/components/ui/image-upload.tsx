@@ -6,8 +6,8 @@ import { openCloudinaryWidget, getCloudinaryUrl, validateCloudinaryConfig } from
 import { cn } from '@/lib/utils';
 
 interface ImageUploadProps {
-  value?: string; // Current cloudinary_public_id
-  onChange: (publicId: string) => void;
+  value?: string; // Current image URL or cloudinary_public_id
+  onChange: (url: string, publicId?: string) => void;
   onRemove?: () => void;
   label?: string;
   description?: string;
@@ -15,6 +15,7 @@ interface ImageUploadProps {
   className?: string;
   previewWidth?: number;
   previewHeight?: number;
+  folder?: string;
 }
 
 export function ImageUpload({
@@ -27,6 +28,7 @@ export function ImageUpload({
   className,
   previewWidth = 400,
   previewHeight = 300,
+  folder,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,14 +46,15 @@ export function ImageUpload({
     openCloudinaryWidget(
       (publicId: string, secureUrl: string) => {
         console.log('Upload successful:', { publicId, secureUrl });
-        onChange(publicId);
+        onChange(secureUrl, publicId);
         setUploading(false);
       },
       (uploadError: any) => {
         console.error('Upload failed:', uploadError);
         setError('Failed to upload image. Please try again.');
         setUploading(false);
-      }
+      },
+      folder
     );
   };
 
@@ -59,17 +62,20 @@ export function ImageUpload({
     if (onRemove) {
       onRemove();
     } else {
-      onChange('');
+      onChange('', '');
     }
     setError(null);
   };
 
-  const imageUrl = value ? getCloudinaryUrl(value, { 
-    width: previewWidth, 
-    height: previewHeight,
-    crop: 'fill',
-    quality: 'auto',
-  }) : null;
+  // If value is already a full URL, use it directly; otherwise construct from public ID
+  const imageUrl = value ? (
+    value.startsWith('http') ? value : getCloudinaryUrl(value, { 
+      width: previewWidth, 
+      height: previewHeight,
+      crop: 'fill',
+      quality: 'auto',
+    })
+  ) : null;
 
   return (
     <div className={cn('space-y-4', className)}>

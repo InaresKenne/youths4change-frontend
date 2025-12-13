@@ -1,7 +1,7 @@
 // Validation regex patterns (matching Flask backend)
 
 export const validationPatterns = {
-  email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+  email: /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,6}$/,
   phone: /^\+?[0-9]{10,15}$/,
   name: /^[a-zA-Z\s]{3,50}$/,
   amount: /^\d+(\.\d{2})?$/,
