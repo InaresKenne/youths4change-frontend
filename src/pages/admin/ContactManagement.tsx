@@ -11,17 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import type { ContactInfo, SocialMedia, RegionalOffice } from '@/types';
 
-// Countries list
-const COUNTRIES = [
-  'Ghana',
-  'Kenya',
-  'Nigeria',
-  'South Africa',
-  'Uganda',
-  'Tanzania',
-  'Rwanda',
-  'Cameroon',
-] as const;
 import { 
   Save, 
   Loader2, 
@@ -84,6 +73,7 @@ export function ContactManagement() {
   const [contactInfo, setContactInfo] = useState<ContactInfo[]>([]);
   const [socialMedia, setSocialMedia] = useState<SocialMedia[]>([]);
   const [regionalOffices, setRegionalOffices] = useState<RegionalOffice[]>([]);
+  const [countries, setCountries] = useState<string[]>([]);
   
   // UI state
   const [loading, setLoading] = useState(true);
@@ -133,10 +123,11 @@ export function ContactManagement() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [contactRes, socialRes, officeRes] = await Promise.all([
+      const [contactRes, socialRes, officeRes, countriesRes] = await Promise.all([
         adminContactService.getContactInfo(),
         adminContactService.getSocialMedia(),
         adminContactService.getRegionalOffices(),
+        adminContactService.getOfficeCountries(),
       ]);
       
       if (contactRes.success && contactRes.data) {
@@ -149,6 +140,10 @@ export function ContactManagement() {
       
       if (officeRes.success && officeRes.data) {
         setRegionalOffices(officeRes.data);
+      }
+      
+      if (countriesRes.success && countriesRes.data) {
+        setCountries(countriesRes.data);
       }
     } catch (err) {
       console.error('Error loading data:', err);
@@ -341,10 +336,8 @@ export function ContactManagement() {
     }
   };
 
-  // Get used countries (for filtering in office creation)
-  const usedCountries = regionalOffices.map(o => o.country);
-// Suggest countries that aren't already used
-const availableCountries = COUNTRIES.filter(c => !usedCountries.includes(c));
+  // All countries available from regional offices in database
+  const availableCountries = countries;
 
   if (loading) {
     return (

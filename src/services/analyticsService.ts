@@ -9,6 +9,7 @@ export interface OverviewStats {
   total_donations: number;
   total_beneficiaries: number;
   countries_count: number;
+  total_team_members: number;
 }
 
 export interface CountryStats {

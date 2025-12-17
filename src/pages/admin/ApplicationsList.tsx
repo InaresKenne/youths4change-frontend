@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApplicationService } from '@/services/adminApplicationService';
+import { adminContactService } from '@/services/adminContactService';
 import type { Application } from '@/types';
-import { COUNTRIES } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +44,7 @@ export function ApplicationsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [countryFilter, setCountryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [countries, setCountries] = useState<string[]>([]);
   
   // Review dialog state
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
@@ -53,6 +54,7 @@ export function ApplicationsList() {
 
   useEffect(() => {
     loadApplications();
+    loadCountries();
   }, []);
 
   const loadApplications = async () => {
@@ -66,6 +68,17 @@ export function ApplicationsList() {
       console.error('Error loading applications:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCountries = async () => {
+    try {
+      const response = await adminContactService.getOfficeCountries();
+      if (response.success && response.data) {
+        setCountries(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading countries:', error);
     }
   };
 
@@ -238,7 +251,7 @@ export function ApplicationsList() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Countries</SelectItem>
-                {COUNTRIES.map((country) => (
+                {countries.map((country) => (
                   <SelectItem key={country} value={country}>
                     {country}
                   </SelectItem>

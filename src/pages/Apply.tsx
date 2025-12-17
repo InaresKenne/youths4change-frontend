@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import  type {ApplicationFormData } from '@/services/applicationService';
 import  { applicationService } from '@/services/applicationService';
-import { COUNTRIES } from '@/types';
+import { contactService } from '@/services/contactService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,8 +26,24 @@ export function Apply() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [countries, setCountries] = useState<string[]>([]);
 
   const wordCount = countWords(formData.motivation);
+
+  useEffect(() => {
+    loadCountries();
+  }, []);
+
+  const loadCountries = async () => {
+    try {
+      const response = await contactService.getOfficeCountries();
+      if (response.success && response.data) {
+        setCountries(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading countries:', error);
+    }
+  };
 
   const validateField = (name: keyof ApplicationFormData, value: string): string | null => {
     switch (name) {
@@ -239,7 +255,7 @@ export function Apply() {
                     <SelectValue placeholder="Select your country" />
                   </SelectTrigger>
                   <SelectContent>
-                    {COUNTRIES.map((country) => (
+                    {countries.map((country) => (
                       <SelectItem key={country} value={country}>
                         {country}
                       </SelectItem>

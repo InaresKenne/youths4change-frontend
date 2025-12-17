@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminDonationService} from '@/services/adminDonationService';
 import type {DonationWithProject } from '@/services/adminDonationService';
 import { projectService } from '@/services/projectService';
-import { COUNTRIES } from '@/types';
+import { adminContactService } from '@/services/adminContactService';
 import type { Project } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,9 +44,11 @@ export function DonationsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [countryFilter, setCountryFilter] = useState('all');
   const [projectFilter, setProjectFilter] = useState('all');
+  const [countries, setCountries] = useState<string[]>([]);
 
   useEffect(() => {
     loadData();
+    loadCountries();
   }, []);
 
   const loadData = async () => {
@@ -73,6 +75,17 @@ export function DonationsList() {
       console.error('Error loading donations:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCountries = async () => {
+    try {
+      const response = await adminContactService.getOfficeCountries();
+      if (response.success && response.data) {
+        setCountries(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading countries:', error);
     }
   };
 
@@ -226,7 +239,7 @@ export function DonationsList() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Countries</SelectItem>
-                {COUNTRIES.map((country) => (
+                {countries.map((country) => (
                   <SelectItem key={country} value={country}>
                     {country}
                   </SelectItem>

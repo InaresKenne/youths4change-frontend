@@ -4,7 +4,7 @@ import { projectService } from '@/services/projectService';
 import type { DonationFormData } from '@/services/donationService';
 import { donationService } from '@/services/donationService';
 import type { Project } from '@/types';
-import {COUNTRIES } from '@/types';
+import { contactService } from '@/services/contactService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,9 +35,11 @@ export function Donate() {
   const [success, setSuccess] = useState(false);
   const [donationId, setDonationId] = useState<number | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [countries, setCountries] = useState<string[]>([]);
 
   useEffect(() => {
     loadProjects();
+    loadCountries();
   }, []);
 
   useEffect(() => {
@@ -56,6 +58,17 @@ export function Donate() {
       console.error('Error loading projects:', err);
     } finally {
       setLoadingProjects(false);
+    }
+  };
+
+  const loadCountries = async () => {
+    try {
+      const response = await contactService.getOfficeCountries();
+      if (response.success && response.data) {
+        setCountries(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading countries:', error);
     }
   };
 
@@ -359,7 +372,7 @@ console.log('Raw email:', JSON.stringify(value));
                         <SelectValue placeholder="Select your country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {COUNTRIES.map((country) => (
+                        {countries.map((country) => (
                           <SelectItem key={country} value={country}>
                             {country}
                           </SelectItem>

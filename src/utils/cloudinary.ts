@@ -48,13 +48,16 @@ export const getOptimizedImageUrl = (
  */
 export const openCloudinaryWidget = (
   onSuccess: (publicId: string, secureUrl: string) => void,
-  onError?: (error: any) => void,
+  onError?: (error: string) => void,
+  multiple?: boolean,
   folder?: string,
-  customOptions?: Partial<CloudinaryUploadWidgetOptions>
+  customOptions?: Partial<CloudinaryUploadWidgetOptions>,
+  onClose?: () => void
 ): CloudinaryWidget | null => {
   // Check if Cloudinary is loaded
   if (!window.cloudinary) {
     console.error('Cloudinary widget not loaded');
+    if (onError) onError('Cloudinary widget not loaded');
     return null;
   }
 
@@ -63,8 +66,8 @@ export const openCloudinaryWidget = (
     cloudName: CLOUDINARY_CLOUD_NAME,
     uploadPreset: CLOUDINARY_UPLOAD_PRESET,
     sources: ['local', 'url', 'camera'],
-    multiple: false,
-    maxFiles: 1,
+    multiple: multiple || false,
+    maxFiles: multiple ? 20 : 1,
     maxFileSize: 15000000, // 15MB for higher quality images
     clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg', 'tiff'],
     maxImageWidth: 4000, // Higher resolution
@@ -81,19 +84,35 @@ export const openCloudinaryWidget = (
   const widget = window.cloudinary.createUploadWidget(
     options,
     (error: any, result: CloudinaryUploadResult) => {
+      console.log('Cloudinary event:', result?.event, 'Info:', result?.info?.public_id);
+      
       if (error) {
         console.error('Cloudinary upload error:', error);
-        if (onError) onError(error);
+        if (onError) onError(error.message || 'Upload failed');
         return;
       }
 
-      // Handle successful upload
+      // Handle successful upload - trigger immediately for each file
       if (result.event === 'success') {
+        console.log('Upload success, calling onSuccess for:', result.info.public_id);
         const { public_id, secure_url } = result.info;
         onSuccess(public_id, secure_url);
       }
+      
+      // Handle widget close event
+      if (result.event === 'close') {
+        console.log('Widget closed');
+        // Widget closed, all uploads complete
+        if (onClose) onClose();
+      }
     }
   );
+
+  console.log('Opening Cloudinary widget with options:', { 
+    multiple: options.multiple, 
+    maxFiles: options.maxFiles,
+    folder: options.folder 
+  });
 
   // Open widget
   widget.open();

@@ -365,6 +365,17 @@ export function ContentManagement() {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="hero_video_url">Hero Video URL (Optional)</Label>
+                    <Input
+                      id="hero_video_url"
+                      value={settings.hero_video_url || ''}
+                      onChange={(e) => setSettings({ ...settings, hero_video_url: e.target.value })}
+                      placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..."
+                    />
+                    <p className="text-sm text-gray-500">YouTube or Vimeo video URL to display in the hero section (leave empty to hide video)</p>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="mission_statement">Mission Statement</Label>
                     <Textarea
                       id="mission_statement"

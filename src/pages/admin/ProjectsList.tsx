@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminProjectService } from '@/services/adminProjectService';
+import { adminContactService } from '@/services/adminContactService';
 import type { Project } from '@/types';
-import {COUNTRIES } from '@/types';
 import { getThumbnailUrl } from '@/utils/cloudinary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,8 +46,10 @@ export function ProjectsList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [countries, setCountries] = useState<string[]>([]);
 
   useEffect(() => {
+    loadCountries();
     loadProjects();
   }, []);
 
@@ -62,6 +64,17 @@ export function ProjectsList() {
       console.error('Error loading projects:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCountries = async () => {
+    try {
+      const response = await adminContactService.getOfficeCountries();
+      if (response.success && response.data) {
+        setCountries(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading countries:', error);
     }
   };
 
@@ -160,7 +173,7 @@ export function ProjectsList() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Countries</SelectItem>
-                {COUNTRIES.map((country) => (
+                {countries.map((country) => (
                   <SelectItem key={country} value={country}>
                     {country}
                   </SelectItem>

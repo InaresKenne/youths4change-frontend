@@ -90,6 +90,7 @@ export interface SiteSettings {
   site_name: string;
   hero_heading: string;
   hero_description: string;
+  hero_video_url: string;
   mission_statement: string;
   vision_statement: string;
   office_hours: string;
@@ -148,17 +149,3 @@ export interface TeamMember {
   created_at?: string;
   updated_at?: string;
 }
-
-// Countries list (8 countries Y4C operates in)
-export const COUNTRIES = [
-  'Ghana',
-  'Kenya',
-  'Nigeria',
-  'South Africa',
-  'Uganda',
-  'Tanzania',
-  'Rwanda',
-  'Cameroon',
-] as const;
-
-export type Country = typeof COUNTRIES[number];

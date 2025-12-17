@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { adminProjectService } from '@/services/adminProjectService';
 import type {ProjectFormData } from '@/services/adminProjectService';
-import { COUNTRIES } from '@/types';
+import { adminContactService } from '@/services/adminContactService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,12 +36,25 @@ export function ProjectForm({ mode }: ProjectFormProps) {
   const [loading, setLoading] = useState(mode === 'edit');
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [countries, setCountries] = useState<string[]>([]);
 
   useEffect(() => {
+    loadCountries();
     if (mode === 'edit' && id) {
       loadProject(parseInt(id));
     }
   }, [mode, id]);
+
+  const loadCountries = async () => {
+    try {
+      const response = await adminContactService.getOfficeCountries();
+      if (response.success && response.data) {
+        setCountries(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading countries:', error);
+    }
+  };
 
   const loadProject = async (projectId: number) => {
   try {
@@ -242,7 +255,7 @@ export function ProjectForm({ mode }: ProjectFormProps) {
                     <SelectValue placeholder="Select country" />
                   </SelectTrigger>
                   <SelectContent>
-                    {COUNTRIES.map((country) => (
+                    {countries.map((country) => (
                       <SelectItem key={country} value={country}>
                         {country}
                       </SelectItem>

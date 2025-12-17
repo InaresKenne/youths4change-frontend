@@ -45,11 +45,56 @@ export function Home() {
     }
   };
 
+  // Extract video ID from YouTube or Vimeo URL
+  const getVideoEmbedUrl = (url: string): string | null => {
+    if (!url) return null;
+    
+    // YouTube patterns
+    const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const youtubeMatch = url.match(youtubeRegex);
+    if (youtubeMatch) {
+      return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${youtubeMatch[1]}`;
+    }
+    
+    // Vimeo pattern
+    const vimeoRegex = /vimeo\.com\/(\d+)/;
+    const vimeoMatch = url.match(vimeoRegex);
+    if (vimeoMatch) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&loop=1&muted=1&background=1`;
+    }
+    
+    return null;
+  };
+
+  const videoEmbedUrl = settings?.hero_video_url ? getVideoEmbedUrl(settings.hero_video_url) : null;
+
   return (
     <div>
     {/* Hero Section */}
-    <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-      <div className="container mx-auto px-4 text-center">
+    <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-32 md:py-40 lg:py-48 overflow-hidden min-h-[600px] md:min-h-[700px]">
+      {/* Background Video */}
+      {videoEmbedUrl && (
+        <div className="absolute inset-0 w-full h-full z-0">
+          <iframe
+            src={videoEmbedUrl}
+            className="w-full h-full"
+            style={{ 
+              minHeight: '100%', 
+              minWidth: '177.77vh',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+            allow="autoplay; fullscreen; picture-in-picture"
+            frameBorder="0"
+            title="Hero background video"
+          />
+
+        </div>
+      )}
+      
+      <div className="container mx-auto px-4 text-center relative z-10 flex flex-col justify-center h-full">
         {loading ? (
           <>
             <Skeleton className="h-14 w-3/4 mx-auto mb-4 bg-white/20" />
@@ -57,22 +102,22 @@ export function Home() {
           </>
         ) : (
           <>
-            <h1 className="text-5xl font-bold mb-4">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 drop-shadow-lg">
               {settings?.hero_heading || 'Empowering African Youth'}
             </h1>
-            <p className="text-xl mb-8">
+            <p className="text-xl md:text-2xl mb-10 drop-shadow-lg max-w-3xl mx-auto">
               {settings?.hero_description || 'Creating positive change across eight countries'}
             </p>
           </>
         )}
         <div className="space-x-4">
           <Link to="/projects">
-            <Button size="lg" variant="secondary">
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
               View Projects
             </Button>
           </Link>
           <Link to="/apply">
-            <Button size="lg" variant="outline" className="bg-transparent hover:bg-white/10">
+            <Button size="lg" variant="outline" className="bg-transparent hover:bg-white/10 border-white text-lg px-8 py-6">
               Join Us
             </Button>
           </Link>
@@ -95,11 +140,11 @@ export function Home() {
         ))}
       </div>
     ) : stats ? (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
           { label: 'Countries', value: stats.countries_count },
           { label: 'Active Projects', value: stats.active_projects },
-          { label: 'Young Leaders', value: stats.approved_applications },
+          { label: 'Young Leaders', value: stats.total_team_members + stats.approved_applications },
           { label: 'Lives Impacted', value: stats.total_beneficiaries },
         ].map((stat) => (
           <Card key={stat.label}>

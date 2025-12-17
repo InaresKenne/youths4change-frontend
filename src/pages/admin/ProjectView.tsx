@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { adminProjectService } from '@/services/adminProjectService';
+import { projectImageService } from '@/services/projectImageService';
+import type { ProjectImage } from '@/services/projectImageService';
 import type { Project } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { MultiImageUpload, type MultiImageUploadItem } from '@/components/ui/multi-image-upload';
 import { getFullImageUrl } from '@/utils/cloudinary';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -17,7 +23,19 @@ import {
   DollarSign, 
   Calendar,
   ExternalLink,
+  Plus,
+  X,
+  Image as ImageIcon,
+  Loader2,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,10 +56,18 @@ export function ProjectView() {
   const [error, setError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  
+  // Project images state
+  const [images, setImages] = useState<ProjectImage[]>([]);
+  const [loadingImages, setLoadingImages] = useState(false);
+  const [addImageDialogOpen, setAddImageDialogOpen] = useState(false);
+  const [newImages, setNewImages] = useState<MultiImageUploadItem[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   useEffect(() => {
     if (id) {
       loadProject(parseInt(id));
+      loadImages(parseInt(id));
     }
   }, [id]);
 
@@ -58,6 +84,59 @@ export function ProjectView() {
       setError('Failed to load project');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadImages = async (projectId: number) => {
+    try {
+      setLoadingImages(true);
+      const response = await projectImageService.getImages(projectId);
+      if (response.success && response.data) {
+        setImages(response.data);
+      }
+    } catch (err) {
+      console.error('Error loading images:', err);
+    } finally {
+      setLoadingImages(false);
+    }
+  };
+
+  const handleAddImages = async () => {
+    if (!project || newImages.length === 0) return;
+    
+    try {
+      setUploadingImages(true);
+      
+      // Upload all images in parallel
+      const uploadPromises = newImages.map(img => 
+        projectImageService.addImage(project.id, {
+          cloudinary_public_id: img.cloudinary_public_id,
+          caption: img.caption || undefined,
+        })
+      );
+      
+      await Promise.all(uploadPromises);
+      
+      setAddImageDialogOpen(false);
+      setNewImages([]);
+      loadImages(project.id);
+    } catch (err) {
+      console.error('Error adding images:', err);
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const handleDeleteImage = async (imageId: number) => {
+    if (!project) return;
+    
+    try {
+      const response = await projectImageService.deleteImage(project.id, imageId);
+      if (response.success) {
+        loadImages(project.id);
+      }
+    } catch (err) {
+      console.error('Error deleting image:', err);
     }
   };
 
@@ -234,6 +313,65 @@ export function ProjectView() {
         </CardContent>
       </Card>
 
+      {/* Project Images Gallery */}
+      {project.status === 'completed' && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Project Gallery</CardTitle>
+                <CardDescription>Upload images to showcase the completed project</CardDescription>
+              </div>
+              <Button onClick={() => setAddImageDialogOpen(true)} size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Image
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {loadingImages ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="aspect-square rounded-lg" />
+                ))}
+              </div>
+            ) : images.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-500 mb-4">No images uploaded yet</p>
+                <Button onClick={() => setAddImageDialogOpen(true)} variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add First Image
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {images.map((image) => (
+                  <div key={image.id} className="relative group">
+                    <img
+                      src={getFullImageUrl(image.cloudinary_public_id)}
+                      alt={image.caption || 'Project image'}
+                      className="w-full aspect-square object-cover rounded-lg border"
+                    />
+                    {image.caption && (
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{image.caption}</p>
+                    )}
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleDeleteImage(image.id)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Meta Information */}
       <Card>
         <CardHeader>
@@ -266,6 +404,62 @@ export function ProjectView() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add Images Dialog */}
+      <Dialog open={addImageDialogOpen} onOpenChange={setAddImageDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add Project Images</DialogTitle>
+            <DialogDescription>
+              Upload multiple images to showcase this completed project. You can add captions to each image.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <MultiImageUpload
+              onImagesChange={(images) => {
+                console.log('Images changed in ProjectView:', images.length);
+                setNewImages(images);
+              }}
+              maxImages={20}
+              disabled={uploadingImages}
+            />
+          </div>
+          
+          {/* Debug info */}
+          {newImages.length > 0 && (
+            <div className="text-sm text-gray-600">
+              {newImages.length} image{newImages.length !== 1 ? 's' : ''} ready to upload
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAddImageDialogOpen(false);
+                setNewImages([]);
+              }}
+              disabled={uploadingImages}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddImages}
+              disabled={newImages.length === 0 || uploadingImages}
+            >
+              {uploadingImages ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading {newImages.length} image{newImages.length !== 1 ? 's' : ''}...
+                </>
+              ) : (
+                `Add ${newImages.length} Image${newImages.length !== 1 ? 's' : ''}`
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

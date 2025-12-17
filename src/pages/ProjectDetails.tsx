@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projectService } from '@/services/projectService';
+import { projectImageService } from '@/services/projectImageService';
+import type { ProjectImage } from '@/services/projectImageService';
 import type { Project } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,12 +14,15 @@ import { ArrowLeft, MapPin, Users, DollarSign, Calendar } from 'lucide-react';
 export function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
+  const [images, setImages] = useState<ProjectImage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingImages, setLoadingImages] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
       loadProject(parseInt(id));
+      loadImages(parseInt(id));
     }
   }, [id]);
 
@@ -36,6 +41,20 @@ export function ProjectDetails() {
       setError('Failed to load project details');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadImages = async (projectId: number) => {
+    try {
+      setLoadingImages(true);
+      const response = await projectImageService.getImages(projectId);
+      if (response.success && response.data) {
+        setImages(response.data);
+      }
+    } catch (err) {
+      console.error('Error loading images:', err);
+    } finally {
+      setLoadingImages(false);
     }
   };
 
@@ -214,6 +233,42 @@ export function ProjectDetails() {
             </Card>
           </div>
         </div>
+
+        {/* Project Gallery - Only show for completed projects with images */}
+        {project.status === 'completed' && images.length > 0 && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle>Project Gallery</CardTitle>
+              <CardDescription>Photos from the completed project</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loadingImages ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Skeleton key={i} className="aspect-square rounded-lg" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {images.map((image) => (
+                    <div key={image.id} className="group cursor-pointer">
+                      <div className="overflow-hidden rounded-lg border border-gray-200 hover:border-blue-500 transition-colors">
+                        <img
+                          src={getHeroImageUrl(image.cloudinary_public_id)}
+                          alt={image.caption || 'Project image'}
+                          className="w-full aspect-square object-cover transform group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      {image.caption && (
+                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">{image.caption}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
