@@ -1,5 +1,5 @@
 import api from './api';
-import type { ApiResponse, Admin } from '@/types';
+import type { ApiResponse } from '@/types';
 
 export interface AdminProfile {
   id: number;

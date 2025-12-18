@@ -54,6 +54,7 @@ export function ImageUpload({
         setError('Failed to upload image. Please try again.');
         setUploading(false);
       },
+      false,
       folder
     );
   };

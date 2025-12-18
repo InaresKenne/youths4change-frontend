@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 // Base URL for Flask API - empty to use Vite proxy
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://youths4change-api.onrender.com';

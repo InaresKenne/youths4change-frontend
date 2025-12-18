@@ -20,7 +20,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  X,
 } from 'lucide-react';
 import {
   Dialog,

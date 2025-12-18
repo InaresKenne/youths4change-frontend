@@ -413,9 +413,9 @@ console.log('Raw email:', JSON.stringify(value));
                   <CardTitle>Selected Project</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {selectedProject.image_url && (
+                  {selectedProject.cloudinary_public_id && (
                     <img 
-                      src={selectedProject.image_url}
+                      src={`https://res.cloudinary.com/dsrca4ug2/image/upload/w_400,h_300,c_fill,q_auto,f_auto/${selectedProject.cloudinary_public_id}`}
                       alt={selectedProject.name}
                       className="w-full h-32 object-cover rounded-lg"
                     />

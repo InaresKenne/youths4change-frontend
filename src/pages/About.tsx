@@ -6,7 +6,7 @@ import { analyticsService} from '@/services/analyticsService';
 import type {OverviewStats, CountryStats } from '@/services/analyticsService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { settingsService } from '@/services/settingsService';
-import type { SiteSettings, PageContent, CoreValue, TeamRole, Founder, TeamMember } from '@/types';
+import type { SiteSettings, PageContent, CoreValue, Founder, TeamMember } from '@/types';
 import { teamService } from '@/services/teamService';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
@@ -25,7 +25,6 @@ export function About() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [content, setContent] = useState<PageContent | null>(null);
   const [coreValues, setCoreValues] = useState<CoreValue[]>([]);
-  const [teamRoles, setTeamRoles] = useState<TeamRole[]>([]);
   const [founder, setFounder] = useState<Founder | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,13 +37,12 @@ export function About() {
 
   const loadData = async () => {
     try {
-      const [overviewRes, countryRes, settingsRes, contentRes, valuesRes, rolesRes, founderRes, teamRes] = await Promise.all([
+      const [overviewRes, countryRes, settingsRes, contentRes, valuesRes, founderRes, teamRes] = await Promise.all([
         analyticsService.getOverview(),
         analyticsService.getProjectsByCountry(),
         settingsService.getSettings(),
         settingsService.getPageContent('about'),
         settingsService.getCoreValues(),
-        settingsService.getTeamRoles(),
         teamService.getFounder(),
         teamService.getTeamMembers(),
       ]);
@@ -69,10 +67,6 @@ export function About() {
         setCoreValues(valuesRes.data);
       }
       
-      if (rolesRes.success && rolesRes.data) {
-        setTeamRoles(rolesRes.data);
-      }
-      
       if (founderRes.success && founderRes.data) {
         console.log('Founder data loaded:', founderRes.data);
         setFounder(founderRes.data);
@@ -92,41 +86,6 @@ export function About() {
       setLoading(false);
     }
   };
-
-
-  const values = [
-    {
-      icon: Heart,
-      title: 'Empowerment',
-      description: 'We believe in empowering young people to become leaders and change-makers in their communities.',
-    },
-    {
-      icon: Users,
-      title: 'Community',
-      description: 'Building strong, supportive communities where young people can thrive and grow together.',
-    },
-    {
-      icon: Target,
-      title: 'Impact',
-      description: 'Creating measurable, sustainable impact through strategic projects and initiatives.',
-    },
-    {
-      icon: Globe,
-      title: 'Pan-African',
-      description: 'Fostering unity and collaboration across eight African countries.',
-    },
-  ];
-
-  const countries = [
-    { name: 'Ghana', members: 5, projects: 2 },
-    { name: 'Kenya', members: 3, projects: 1 },
-    { name: 'Nigeria', members: 8, projects: 3 },
-    { name: 'South Africa', members: 4, projects: 2 },
-    { name: 'Uganda', members: 2, projects: 1 },
-    { name: 'Tanzania', members: 3, projects: 1 },
-    { name: 'Rwanda', members: 2, projects: 1 },
-    { name: 'Cameroon', members: 4, projects: 2 },
-  ];
 
   return (
     <div>

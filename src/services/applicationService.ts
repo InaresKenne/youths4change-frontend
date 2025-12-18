@@ -1,5 +1,5 @@
 import api from './api';
-import type { Application, ApiResponse } from '@/types';
+import type { ApiResponse } from '@/types';
 
 export interface ApplicationFormData {
   full_name: string;
