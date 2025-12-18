@@ -36,6 +36,7 @@ import {
   Smartphone,
   CreditCard,
 } from 'lucide-react';
+import { clearCacheEntry } from '@/services/api';
 
 export function DonationView() {
   const navigate = useNavigate();
@@ -78,6 +79,11 @@ export function DonationView() {
     try {
       setVerifying(true);
       await adminDonationService.verify(donation.id);
+      
+      // Clear cache so the donations list updates immediately
+      clearCacheEntry('/api/donations');
+      clearCacheEntry('/api/donations/stats');
+      
       setSuccessMessage('Payment verified successfully!');
       await loadDonation(donation.id);
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -95,6 +101,11 @@ export function DonationView() {
     try {
       setRejecting(true);
       await adminDonationService.reject(donation.id, rejectReason);
+      
+      // Clear cache so the donations list updates immediately
+      clearCacheEntry('/api/donations');
+      clearCacheEntry('/api/donations/stats');
+      
       setSuccessMessage('Payment rejected');
       setShowRejectDialog(false);
       setRejectReason('');
