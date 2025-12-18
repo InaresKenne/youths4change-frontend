@@ -37,5 +37,22 @@ export const adminDonationService = {
     }>>('/api/donations/stats');
     return response.data;
   },
-  
+
+  // Verify donation
+  verify: async (id: number, notes?: string) => {
+    const response = await api.put<ApiResponse<void>>(
+      `/api/donations/${id}/verify`,
+      { notes, admin_id: 3 }
+    );
+    return response.data;
+  },
+
+  // Reject donation
+  reject: async (id: number, reason: string) => {
+    const response = await api.put<ApiResponse<void>>(
+      `/api/donations/${id}/reject`,
+      { reason, admin_id: 3 }
+    );
+    return response.data;
+  },
 };

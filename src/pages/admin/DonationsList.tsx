@@ -44,6 +44,7 @@ export function DonationsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [countryFilter, setCountryFilter] = useState('all');
   const [projectFilter, setProjectFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [countries, setCountries] = useState<string[]>([]);
 
   useEffect(() => {
@@ -96,8 +97,9 @@ export function DonationsList() {
       donation.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCountry = countryFilter === 'all' || donation.country === countryFilter;
     const matchesProject = projectFilter === 'all' || donation.project_id.toString() === projectFilter;
+    const matchesStatus = statusFilter === 'all' || donation.payment_status === statusFilter;
     
-    return matchesSearch && matchesCountry && matchesProject;
+    return matchesSearch && matchesCountry && matchesProject && matchesStatus;
   });
 
   // Calculate filtered totals
@@ -220,7 +222,7 @@ export function DonationsList() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -261,6 +263,19 @@ export function DonationsList() {
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Status Filter */}
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="verified">Verified</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -299,8 +314,9 @@ export function DonationsList() {
                     <TableHead>Project</TableHead>
                     <TableHead>Amount</TableHead>
                     <TableHead>Country</TableHead>
+                    <TableHead>Payment Method</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Payment Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -320,24 +336,31 @@ export function DonationsList() {
                       </TableCell>
                       <TableCell>
                         <span className="font-semibold text-green-600">
-                          ${donation.amount.toLocaleString()}
+                          {donation.currency || 'GHS'} {donation.amount.toLocaleString()}
                         </span>
                       </TableCell>
                       <TableCell>{donation.country}</TableCell>
+                      <TableCell>
+                        <span className="text-xs capitalize">
+                          {donation.payment_method?.replace('_', ' ') || 'N/A'}
+                        </span>
+                      </TableCell>
                       <TableCell>
                         {new Date(donation.donation_date).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
                         <Badge 
                           className={
-                            donation.status === 'completed' 
-                              ? 'bg-green-100 text-green-800'
-                              : donation.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
+                            donation.payment_status === 'verified' 
+                              ? 'bg-green-100 text-green-800 hover:bg-green-100'
+                              : donation.payment_status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                                : donation.payment_status === 'rejected'
+                                  ? 'bg-red-100 text-red-800 hover:bg-red-100'
+                                  : 'bg-gray-100 text-gray-800 hover:bg-gray-100'
                           }
                         >
-                          {donation.status}
+                          {donation.payment_status || 'completed'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
