@@ -18,7 +18,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: 'https://youths4change-api.onrender.com',
         changeOrigin: true,
         secure: false,
         ws: true,
