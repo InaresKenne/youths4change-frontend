@@ -4,7 +4,7 @@ Modern React + TypeScript web application for Youths4Change Initiative - A youth
 
 ## 🌍 Overview
 
-A comprehensive NGO management platform featuring project showcases, volunteer applications, donation processing, team profiles, dynamic content management, and an admin dashboard with analytics.
+A comprehensive NGO management platform featuring project showcases, volunteer applications, donation processing with manual payment verification (Mobile Money & Bank Transfer), team profiles, dynamic content management, and an admin dashboard with analytics.
 
 ## 🚀 Tech Stack
 
