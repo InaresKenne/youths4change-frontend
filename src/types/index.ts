@@ -25,7 +25,7 @@ export interface Application {
   reviewed_at?: string;
 }
 
-// Donation types
+// Donation types with manual payment verification support
 export interface Donation {
   id: number;
   donor_name: string;
@@ -35,7 +35,7 @@ export interface Donation {
   country: string;
   status: string;
   donation_date: string;
-  // Manual payment fields
+  // Manual payment fields (Mobile Money & Bank Transfer)
   currency?: string;
   payment_method?: 'mobile_money' | 'bank_transfer';
   transaction_id?: string;
