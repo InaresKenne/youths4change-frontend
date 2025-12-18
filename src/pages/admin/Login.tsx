@@ -91,12 +91,6 @@ export function AdminLogin() {
                 'Sign In'
               )}
             </Button>
-
-            <div className="text-center text-sm text-gray-500 mt-4">
-              <p>Default credentials:</p>
-              <p className="font-mono">username: admin</p>
-              <p className="font-mono">password: admin123</p>
-            </div>
           </form>
         </CardContent>
       </Card>
