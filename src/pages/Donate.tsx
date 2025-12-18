@@ -116,7 +116,7 @@ export function Donate() {
     );
   };
 
-  const validateField = (name: keyof DonationFormData, value: string | number): string | null => {
+  const validateField = (name: keyof DonationFormData, value: string | number | undefined): string | null => {
     switch (name) {
       case 'donor_name':
         if (!value) return 'Donor name is required';
@@ -126,6 +126,7 @@ export function Donate() {
         return null;
 
       case 'email':
+        if (!value) return 'Email is required';
         const email = value.toString().trim();
         if (!email) return 'Email is required';
         if (!validationPatterns.email.test(email)) {
@@ -170,25 +171,13 @@ export function Donate() {
   };
 
   const handleBlur = (field: keyof DonationFormData) => {
-    const error = validateField(field, formData[field]);
+    const error = validateField(field, formData[field] as string | number | undefined);
     if (error) {
       setErrors(prev => ({ ...prev, [field]: error }));
     }
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof DonationFormData, string>> = {};
-    
-    (Object.keys(formData) as Array<keyof DonationFormData>).forEach(key => {
-      const error = validateField(key, formData[key]);
-      if (error) {
-        newErrors[key] = error;
-      }
-    });
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleContinueToPayment = () => {
     // Validate first step fields
@@ -196,7 +185,7 @@ export function Donate() {
     const newErrors: Partial<Record<keyof DonationFormData, string>> = {};
     
     requiredFields.forEach(field => {
-      const error = validateField(field, formData[field]);
+      const error = validateField(field, formData[field] as string | number | undefined);
       if (error) {
         newErrors[field] = error;
       }
