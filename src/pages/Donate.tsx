@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { validationPatterns } from '@/utils/validation';
 import { Loader2, CheckCircle2, AlertCircle, Upload, Copy, CreditCard, Smartphone } from 'lucide-react';
 import { openCloudinaryWidget } from '@/utils/cloudinary';
+import { clearCacheEntry } from '@/services/api';
 
 export function Donate() {
   const navigate = useNavigate();
@@ -238,6 +239,11 @@ export function Donate() {
       
       if (response.success && response.id) {
         console.log('Donation successful, ID:', response.id);
+        
+        // Clear donation cache so admin sees the new donation immediately
+        clearCacheEntry('/api/donations');
+        clearCacheEntry('/api/donations/stats');
+        
         setSuccess(true);
         setDonationId(response.id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
