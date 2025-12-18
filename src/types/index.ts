@@ -35,6 +35,16 @@ export interface Donation {
   country: string;
   status: string;
   donation_date: string;
+  // Manual payment fields
+  currency?: string;
+  payment_method?: 'mobile_money' | 'bank_transfer';
+  transaction_id?: string;
+  payment_proof_url?: string;
+  payment_status?: 'pending' | 'verified' | 'rejected';
+  verified_at?: string;
+  verified_by?: number;
+  verified_by_username?: string;
+  verification_notes?: string;
 }
 
 // Admin types
