@@ -1,13 +1,13 @@
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12 mt-auto">
+    <footer className="bg-gray-900 text-white py-8 sm:py-12 mt-auto">
       <div className="container mx-auto px-4">
         <div className="text-center">
-          <h3 className="text-2xl font-bold mb-2">Youths4Change Initiative</h3>
-          <p className="text-gray-400 mb-4">
+          <h3 className="text-xl sm:text-2xl font-bold mb-2">Youths4Change Initiative</h3>
+          <p className="text-gray-400 mb-4 text-sm sm:text-base px-4">
             Empowering young people across Africa to create positive change
           </p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-xs sm:text-sm">
             © 2025 Youths4Change. All rights reserved.
           </p>
         </div>

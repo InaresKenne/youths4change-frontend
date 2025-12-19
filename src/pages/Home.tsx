@@ -71,10 +71,10 @@ export function Home() {
   return (
     <div>
     {/* Hero Section */}
-    <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-32 md:py-40 lg:py-48 overflow-hidden min-h-[600px] md:min-h-[700px]">
+    <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 sm:py-32 md:py-40 lg:py-48 overflow-hidden min-h-[500px] sm:min-h-[600px] md:min-h-[700px]">
       {/* Background Video */}
       {videoEmbedUrl && (
-        <div className="absolute inset-0 w-full h-full z-0">
+        <div className="absolute inset-0 w-full h-full z-0 hidden sm:block">
           <iframe
             src={videoEmbedUrl}
             className="w-full h-full"
@@ -90,34 +90,34 @@ export function Home() {
             frameBorder="0"
             title="Hero background video"
           />
-
+          <div className="absolute inset-0 bg-blue-900/30" />
         </div>
       )}
       
       <div className="container mx-auto px-4 text-center relative z-10 flex flex-col justify-center h-full">
         {loading ? (
           <>
-            <Skeleton className="h-14 w-3/4 mx-auto mb-4 bg-white/20" />
-            <Skeleton className="h-6 w-2/3 mx-auto mb-8 bg-white/20" />
+            <Skeleton className="h-10 sm:h-14 w-11/12 sm:w-3/4 mx-auto mb-4 bg-white/20" />
+            <Skeleton className="h-4 sm:h-6 w-10/12 sm:w-2/3 mx-auto mb-8 bg-white/20" />
           </>
         ) : (
           <>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 drop-shadow-lg">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 drop-shadow-lg px-2">
               {settings?.hero_heading || 'Empowering African Youth'}
             </h1>
-            <p className="text-xl md:text-2xl mb-10 drop-shadow-lg max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-10 drop-shadow-lg max-w-3xl mx-auto px-4">
               {settings?.hero_description || 'Creating positive change across eight countries'}
             </p>
           </>
         )}
-        <div className="space-x-4">
-          <Link to="/projects">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-4 justify-center items-center px-4">
+          <Link to="/projects" className="w-full sm:w-auto">
+            <Button size="lg" variant="secondary" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
               View Projects
             </Button>
           </Link>
-          <Link to="/apply">
-            <Button size="lg" variant="outline" className="bg-transparent hover:bg-white/10 border-white text-lg px-8 py-6">
+          <Link to="/apply" className="w-full sm:w-auto">
+            <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent hover:bg-white/10 border-white text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
               Join Us
             </Button>
           </Link>

@@ -143,23 +143,23 @@ export function Apply() {
 
   if (success) {
     return (
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
         <Card className="max-w-2xl mx-auto border-green-200 bg-green-50">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <CheckCircle2 className="h-16 w-16 text-green-600" />
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <CheckCircle2 className="h-12 w-12 sm:h-16 sm:w-16 text-green-600" />
             </div>
-            <CardTitle className="text-3xl text-green-900">Application Submitted!</CardTitle>
-            <CardDescription className="text-lg text-green-700">
+            <CardTitle className="text-2xl sm:text-3xl text-green-900">Application Submitted!</CardTitle>
+            <CardDescription className="text-base sm:text-lg text-green-700">
               Thank you for your interest in joining Youths4Change
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <p className="text-gray-700">
+          <CardContent className="text-center space-y-3 sm:space-y-4">
+            <p className="text-sm sm:text-base text-gray-700 px-2">
               We've received your application and will review it within 7 business days. 
-              You'll receive an email at <strong>{formData.email}</strong> with our decision.
+              You'll receive an email at <strong className="break-all">{formData.email}</strong> with our decision.
             </p>
-            <div className="flex gap-4 justify-center pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-3 sm:pt-4">
               <Button onClick={() => navigate('/')}>
                 Return Home
               </Button>
@@ -174,12 +174,12 @@ export function Apply() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Join Youths4Change</CardTitle>
-            <CardDescription className="text-lg">
+            <CardTitle className="text-2xl sm:text-3xl">Join Youths4Change</CardTitle>
+            <CardDescription className="text-base sm:text-lg">
               Apply to become part of our team and help create positive change across Africa
             </CardDescription>
           </CardHeader>

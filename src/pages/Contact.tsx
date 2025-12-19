@@ -68,9 +68,9 @@ export function Contact() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
         {/* Main Contact Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12 md:mb-16">
           {loading ? (
             // Loading skeletons
             [1, 2, 3, 4].map((i) => (
@@ -118,10 +118,10 @@ export function Contact() {
         </div>
 
         {/* Social Media */}
-        <Card className="mb-16">
+        <Card className="mb-8 sm:mb-12 md:mb-16">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Follow Us on Social Media</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-xl sm:text-2xl">Follow Us on Social Media</CardTitle>
+            <CardDescription className="text-sm sm:text-base px-2">
               Stay updated with our latest projects, events, and success stories
             </CardDescription>
           </CardHeader>

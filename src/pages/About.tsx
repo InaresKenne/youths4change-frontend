@@ -90,17 +90,17 @@ export function About() {
   return (
     <div>
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12 sm:py-16 md:py-20">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold mb-4">About Youths4Change</h1>
-            <p className="text-xl max-w-3xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">About Youths4Change</h1>
+            <p className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto px-2">
               {content?.hero_text || 'A youth-led nonprofit organization dedicated to empowering young people across Africa.'}
             </p>
           </div>
         </div>
       {/* Mission & Vision */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12 md:mb-16">
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Our Mission</CardTitle>
@@ -141,10 +141,10 @@ export function About() {
         </div>  
 
         {/* Core Values */}
-<div className="mb-16">
-  <h2 className="text-3xl font-bold text-center mb-8">Our Core Values</h2>
+<div className="mb-8 sm:mb-12 md:mb-16">
+  <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6 md:mb-8">Our Core Values</h2>
   {loading ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {[1, 2, 3, 4].map((i) => (
         <Skeleton key={i} className="h-64 w-full" />
       ))}

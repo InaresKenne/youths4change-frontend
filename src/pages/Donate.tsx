@@ -325,15 +325,15 @@ export function Donate() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
       <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-3xl">Make a Donation</CardTitle>
-                <CardDescription className="text-lg">
+                <CardTitle className="text-2xl sm:text-3xl">Make a Donation</CardTitle>
+                <CardDescription className="text-base sm:text-lg">
                   Support our mission to empower young people across Africa
                 </CardDescription>
               </CardHeader>
