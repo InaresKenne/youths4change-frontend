@@ -53,14 +53,14 @@ export function Home() {
     const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const youtubeMatch = url.match(youtubeRegex);
     if (youtubeMatch) {
-      return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&loop=1&playlist=${youtubeMatch[1]}&playsinline=1&controls=0`;
+      return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&loop=1&playlist=${youtubeMatch[1]}&playsinline=1&controls=1&rel=0`;
     }
     
     // Vimeo pattern
     const vimeoRegex = /vimeo\.com\/(\d+)/;
     const vimeoMatch = url.match(vimeoRegex);
     if (vimeoMatch) {
-      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&loop=1&background=1&playsinline=1`;
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&loop=1&playsinline=1&controls=1`;
     }
     
     return null;
