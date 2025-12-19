@@ -53,14 +53,14 @@ export function Home() {
     const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const youtubeMatch = url.match(youtubeRegex);
     if (youtubeMatch) {
-      return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${youtubeMatch[1]}`;
+      return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${youtubeMatch[1]}&playsinline=1`;
     }
     
     // Vimeo pattern
     const vimeoRegex = /vimeo\.com\/(\d+)/;
     const vimeoMatch = url.match(vimeoRegex);
     if (vimeoMatch) {
-      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&loop=1&muted=1&background=1`;
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&loop=1&muted=1&background=1&playsinline=1`;
     }
     
     return null;
@@ -74,7 +74,7 @@ export function Home() {
     <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 sm:py-32 md:py-40 lg:py-48 overflow-hidden min-h-[500px] sm:min-h-[600px] md:min-h-[700px]">
       {/* Background Video */}
       {videoEmbedUrl && (
-        <div className="absolute inset-0 w-full h-full z-0 hidden sm:block">
+        <div className="absolute inset-0 w-full h-full z-0">
           <iframe
             src={videoEmbedUrl}
             className="w-full h-full"
@@ -86,9 +86,10 @@ export function Home() {
               left: '50%',
               transform: 'translate(-50%, -50%)'
             }}
-            allow="autoplay; fullscreen; picture-in-picture"
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
             frameBorder="0"
             title="Hero background video"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-blue-900/30" />
         </div>
