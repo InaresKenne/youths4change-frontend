@@ -77,21 +77,23 @@ export function Home() {
         <div className="absolute inset-0 w-full h-full z-0">
           <iframe
             src={videoEmbedUrl}
-            className="w-full h-full"
+            className="w-full h-full object-cover"
             style={{ 
-              minHeight: '100%', 
-              minWidth: '177.77vh',
               position: 'absolute',
               top: '50%',
               left: '50%',
-              transform: 'translate(-50%, -50%)'
+              transform: 'translate(-50%, -50%)',
+              width: '100%',
+              height: '100%',
+              minWidth: '100%',
+              minHeight: '100%'
             }}
-            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
             frameBorder="0"
             title="Hero background video"
-            loading="lazy"
           />
-          <div className="absolute inset-0 bg-blue-900/30" />
+          <div className="absolute inset-0 bg-blue-900/30 pointer-events-none" />
         </div>
       )}
       
